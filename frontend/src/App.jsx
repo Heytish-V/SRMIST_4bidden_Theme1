@@ -446,6 +446,18 @@ function App() {
               <label className="bugatti-label">PIPELINE TELEMETRY</label>
               <div className="bugatti-telemetry-list">
                 <div className="bugatti-telemetry-row">
+                  <span className="bugatti-telemetry-label">CORPUS GRAPH</span>
+                  <span className="bugatti-telemetry-val">
+                    {activeRepo ? `${activeRepo.graph_nodes} NODES` : "274 NODES"}
+                  </span>
+                </div>
+                <div className="bugatti-telemetry-row">
+                  <span className="bugatti-telemetry-label">INDEXED CHUNKS</span>
+                  <span className="bugatti-telemetry-val">
+                    {activeRepo ? `${activeRepo.chunks_indexed} CHUNKS` : "107 CHUNKS"}
+                  </span>
+                </div>
+                <div className="bugatti-telemetry-row">
                   <span className="bugatti-telemetry-label">TOP-K RETRIEVAL</span>
                   <span className="bugatti-telemetry-val">5 CHUNKS</span>
                 </div>
@@ -481,8 +493,18 @@ function App() {
               selected={selected}
               results={results}
               isExpanded={graphExpanded}
+              totalGraphNodes={activeRepo ? activeRepo.graph_nodes : 274}
+              onRecenterCandidate={() => {
+                if (results && results.length > 0) {
+                  setSelected(results[0]);
+                  if (results[0].chunk_id) fetchGraph(results[0].chunk_id);
+                }
+              }}
               onToggleExpand={() => setGraphExpanded(!graphExpanded)}
               onSelectNode={(nodeOrChunk) => {
+                if (nodeOrChunk.is_external || nodeOrChunk.file === "external") {
+                  return; // Don't replace active candidate code with external placeholder
+                }
                 setSelected(nodeOrChunk);
                 if (nodeOrChunk.chunk_id) fetchGraph(nodeOrChunk.chunk_id);
               }}
@@ -498,9 +520,17 @@ function App() {
                 </span>
 
                 <span className="bugatti-code-lines">
-                  {selected
-                    ? `LINES L${selected.start_line} – L${selected.end_line}`
-                    : "AWAITING SELECTION"}
+                  {selected ? (
+                    selected.start_line != null && selected.end_line != null ? (
+                      `LINES L${selected.start_line} – L${selected.end_line}`
+                    ) : selected.is_external || selected.file === "external" ? (
+                      "EXTERNAL DEPENDENCY · NO LOCAL SOURCE FILE"
+                    ) : (
+                      "NO SOURCE LOCATION"
+                    )
+                  ) : (
+                    "AWAITING SELECTION"
+                  )}
                 </span>
               </div>
 
@@ -511,8 +541,11 @@ function App() {
                   language="python"
                   theme="prism-bugatti-dark"
                   value={
-                    selected?.code ||
-                    "# Select a code candidate or run an agent search to inspect source code.\n# Monaco syntax highlighting, line decorations, and call site evidence will project here."
+                    selected?.code && !selected.code.startsWith("# Subgraph node: external::")
+                      ? selected.code
+                      : selected?.is_external || selected?.file === "external"
+                      ? `# EXTERNAL RUNTIME DEPENDENCY: ${selected?.symbol || "external"}\n# This symbol is provided by a third-party library or standard runtime.\n# No local repository source file is associated with this node.\n# Select a repository candidate from the right panel to inspect source code.`
+                      : "# Select a code candidate or run an agent search to inspect source code.\n# Monaco syntax highlighting, line decorations, and call site evidence will project here."
                   }
                   onMount={(editor, monaco) => {
                     handleEditorDidMount(editor, monaco);
@@ -691,7 +724,7 @@ function App() {
                 )}
 
                 {/* Inline Explainability card under candidates if selected */}
-                {selected && <WhyThisResult result={selected} />}
+                {selected && <WhyThisResult result={selected} query={query} />}
               </>
             )}
 
@@ -727,7 +760,7 @@ function App() {
             {rightTab === "why" && (
               <>
                 {selected ? (
-                  <WhyThisResult result={selected} />
+                  <WhyThisResult result={selected} query={query} />
                 ) : (
                   <div className="bugatti-empty-state">
                     SELECT A CODE CANDIDATE TO VIEW EXPLAINABILITY SYNTHESIS.

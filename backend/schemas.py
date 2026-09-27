@@ -82,6 +82,8 @@ class GraphNode(BaseModel):
     file: str
     is_external: bool = False
     node_type: str = "internal"
+    start_line: Optional[int] = None
+    end_line: Optional[int] = None
 
 
 class GraphEdge(BaseModel):

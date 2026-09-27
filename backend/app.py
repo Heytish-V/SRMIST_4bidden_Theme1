@@ -341,15 +341,21 @@ def graph_subgraph(
 
     # Build node list
     nodes = []
+    dna_store = STATE.get("dna_store") or {}
     for nid in visited:
         nd = graph.nodes.get(nid, {})
         is_ext = nid.startswith("external::") or nd.get("is_external", False)
+        dna = dna_store.get(nid)
+        start_line = getattr(dna, "start_line", None) if dna else nd.get("start_line")
+        end_line = getattr(dna, "end_line", None) if dna else nd.get("end_line")
         nodes.append(GraphNode(
             id=nid,
             symbol=nd.get("symbol", nid.split("::")[-1]),
             file=nd.get("file", "external"),
             is_external=is_ext,
             node_type="external" if is_ext else "internal",
+            start_line=start_line,
+            end_line=end_line,
         ))
 
     # Build edge list (only edges within visited set)

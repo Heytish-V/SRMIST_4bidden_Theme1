@@ -586,6 +586,305 @@
   color: var(--text-primary);
 }
 
+/* ==========================================================================
+   REACT FLOW & INTERACTIVE ARCHITECTURE GRAPH STYLES
+   ========================================================================== */
+.react-flow {
+  background-color: #000000 !important;
+}
+
+.react-flow__handle {
+  border-radius: 0px !important;
+  width: 7px !important;
+  height: 7px !important;
+  background-color: var(--border-hairline-strong, #3a3a3a) !important;
+  border: none !important;
+}
+
+.react-flow__handle:hover {
+  background-color: #ffffff !important;
+}
+
+.react-flow__edge-path {
+  stroke-linecap: round;
+}
+
+/* Custom Interactive Flow Node */
+.bugatti-flow-node {
+  min-width: 170px;
+  max-width: 260px;
+  padding: 10px 14px;
+  border-radius: var(--radius-none);
+  text-align: left;
+  cursor: grab;
+  position: relative;
+  transition: border-color 0.15s ease, background-color 0.15s ease, opacity 0.2s ease;
+  user-select: none;
+}
+
+.bugatti-flow-node:active {
+  cursor: grabbing;
+}
+
+.bugatti-flow-node.is-selected {
+  border-color: var(--border-white, #ffffff) !important;
+  background-color: var(--bg-surface-elevated, #1f1f1f) !important;
+  box-shadow: 0 0 0 1px var(--border-white, #ffffff);
+}
+
+.bugatti-flow-node.is-dimmed {
+  opacity: 0.2 !important;
+}
+
+/* Aggregate Group Node */
+.bugatti-group-node {
+  padding: 10px 16px;
+  border: 1px dashed var(--accent-link, #c3d9f3);
+  background-color: var(--bg-surface-soft, #0d0d0d);
+  border-radius: var(--radius-none);
+  cursor: pointer;
+  text-align: center;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.bugatti-group-node:hover {
+  border-color: #ffffff;
+  background-color: var(--bg-surface-card, #141414);
+}
+
+.bugatti-group-badge {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--accent-link, #c3d9f3);
+  margin-bottom: 3px;
+}
+
+.bugatti-group-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  letter-spacing: 1px;
+}
+
+.bugatti-group-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+/* Flow Controls (+, -, Fit, Reset) */
+.bugatti-flow-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bugatti-flow-ctrl-btn {
+  background: transparent;
+  border: 1px solid var(--border-hairline-strong);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 9px;
+  border-radius: var(--radius-none);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bugatti-flow-ctrl-btn:hover {
+  border-color: var(--border-white);
+  background-color: var(--bg-surface-elevated);
+}
+
+.bugatti-zoom-indicator {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 0 8px;
+  min-width: 38px;
+}
+
+.bugatti-flow-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--text-muted-soft);
+}
+
+/* Graph Search Form */
+.bugatti-graph-search-form {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bugatti-graph-search-input {
+  border: 1px solid var(--border-hairline-strong);
+  background-color: var(--bg-surface-soft);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 5px 8px;
+  width: 160px;
+  border-radius: var(--radius-none);
+  outline: none;
+}
+
+.bugatti-graph-search-input:focus {
+  border-color: var(--border-white);
+}
+
+.bugatti-graph-search-btn {
+  border: 1px solid var(--border-hairline-strong);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 5px 9px;
+  border-radius: var(--radius-none);
+  cursor: pointer;
+}
+
+.bugatti-graph-search-btn:hover {
+  border-color: var(--border-white);
+  background-color: var(--bg-surface-elevated);
+}
+
+.bugatti-search-not-found {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--semantic-error, #f26666);
+  letter-spacing: 0.5px;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+/* Graph Sub-Toolbar */
+.bugatti-graph-toolbar {
+  height: 36px;
+  padding: 0 var(--space-md);
+  border-bottom: 1px solid var(--border-hairline);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-surface-card);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.bugatti-external-cluster-btn {
+  background: transparent;
+  border: 1px solid var(--border-hairline-strong);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-none);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bugatti-external-cluster-btn:hover,
+.bugatti-external-cluster-btn.is-open {
+  border-color: var(--border-white);
+  color: var(--text-primary);
+  background-color: var(--bg-surface-elevated);
+}
+
+.bugatti-external-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 280px;
+  background-color: rgba(13, 13, 13, 0.95);
+  border-left: 1px solid var(--border-hairline);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(4px);
+}
+
+.bugatti-drawer-header {
+  height: 36px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-hairline);
+  background-color: var(--bg-surface-soft);
+}
+
+.bugatti-drawer-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.bugatti-drawer-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.bugatti-drawer-close:hover {
+  color: var(--text-primary);
+}
+
+.bugatti-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bugatti-external-row {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px;
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-surface-card);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.bugatti-external-row:hover {
+  border-color: var(--border-hairline-strong);
+}
+
+.bugatti-ext-badge {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text-muted-soft);
+  letter-spacing: 1px;
+}
+
+.bugatti-ext-symbol {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  margin: 2px 0;
+}
+
+.bugatti-ext-desc {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
 /* Empty Graph State */
 .bugatti-empty-graph-panel .bugatti-graph-canvas-empty {
   display: flex;

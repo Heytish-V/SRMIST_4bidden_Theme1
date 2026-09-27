@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
@@ -12,6 +12,8 @@ from backend.schemas import (
     SubgraphResponse,
     GraphNode,
     GraphEdge,
+    IndexRequest,
+    IndexResponse,
 )
 
 import pipeline_wiring
@@ -56,6 +58,7 @@ STATE = {
     "dna_store": {},
     "mock_mode": True,
     "pipeline_error": None,
+    "repo_path": None,
 }
 
 
@@ -99,6 +102,7 @@ def initialize_pipeline():
         STATE["dna_store"] = dna_store
         STATE["mock_mode"] = False
         STATE["pipeline_error"] = None
+        STATE["repo_path"] = repo_dir
 
         print("=" * 60)
         print("REAL PIPELINE INITIALIZED SUCCESSFULLY")
@@ -138,7 +142,87 @@ def health():
             STATE["graph"].number_of_edges()
             if STATE["graph"] is not None else 0
         ),
+        "repo_path": STATE.get("repo_path"),
     }
+
+
+# ---------------------------------------------------------
+# REPOSITORY INDEXING
+# ---------------------------------------------------------
+
+@app.post(
+    "/api/repository/index",
+    response_model=IndexResponse,
+)
+def index_repository(req: IndexRequest):
+    """
+    Index an arbitrary local repository.
+
+    Accepts an absolute directory path, validates it exists,
+    runs the existing pipeline build, and atomically swaps STATE.
+    On failure, the previously working STATE is preserved.
+    """
+    repo_path = os.path.abspath(req.repo_path)
+
+    # Validate the path
+    if not os.path.isdir(repo_path):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Directory does not exist: {repo_path}",
+        )
+
+    # Snapshot current STATE for rollback
+    prev_state = {
+        "agent": STATE["agent"],
+        "graph": STATE["graph"],
+        "dna_store": STATE["dna_store"],
+        "mock_mode": STATE["mock_mode"],
+        "pipeline_error": STATE["pipeline_error"],
+        "repo_path": STATE.get("repo_path"),
+    }
+
+    try:
+        print("=" * 60)
+        print(f"INDEXING REPOSITORY: {repo_path}")
+        print("=" * 60)
+
+        agent, graph, dna_store = (
+            pipeline_wiring.build_pipeline_from_directory(repo_path)
+        )
+
+        STATE["agent"] = agent
+        STATE["graph"] = graph
+        STATE["dna_store"] = dna_store
+        STATE["mock_mode"] = False
+        STATE["pipeline_error"] = None
+        STATE["repo_path"] = repo_path
+
+        result = IndexResponse(
+            repo_path=repo_path,
+            chunks_indexed=len(dna_store),
+            graph_nodes=graph.number_of_nodes() if graph else 0,
+            graph_edges=graph.number_of_edges() if graph else 0,
+            status="indexed",
+        )
+
+        print(f"INDEXING COMPLETE: {len(dna_store)} chunks")
+        print("=" * 60)
+
+        return result
+
+    except Exception as exc:
+        # Rollback: restore previously working state
+        STATE.update(prev_state)
+
+        print("=" * 60)
+        print(f"INDEXING FAILED: {exc}")
+        print("Rolled back to previous state.")
+        print("=" * 60)
+
+        raise HTTPException(
+            status_code=500,
+            detail=f"Indexing failed: {exc}",
+        )
 
 
 # ---------------------------------------------------------

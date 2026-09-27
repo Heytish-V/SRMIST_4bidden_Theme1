@@ -96,3 +96,25 @@ class SubgraphResponse(BaseModel):
     center_id: str
     nodes: List[GraphNode]
     edges: List[GraphEdge]
+
+
+# ---------------------------------------------------------
+# REPOSITORY INDEXING
+# ---------------------------------------------------------
+
+class IndexRequest(BaseModel):
+    """Request to index a local repository directory."""
+    repo_path: str = Field(
+        ...,
+        example="C:/Users/Mithun/Projects/MyRepo",
+        description="Absolute path to a local repository directory.",
+    )
+
+
+class IndexResponse(BaseModel):
+    """Response after indexing a repository."""
+    repo_path: str
+    chunks_indexed: int
+    graph_nodes: int
+    graph_edges: int
+    status: str = "indexed"

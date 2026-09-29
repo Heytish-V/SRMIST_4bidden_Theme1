@@ -73,3 +73,5 @@ out/
 cache/
 .cache/
 data/raw/
+evaluation/results/
+
